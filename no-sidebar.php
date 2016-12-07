@@ -18,6 +18,20 @@
 	<body class="no-sidebar">
 		<div id="page-wrapper">
 
+			<!-- Scripts -->
+				<script src="assets/js/jquery.min.js"></script>
+				<script src="assets/js/jquery.dropotron.min.js"></script>
+				<script src="assets/js/jquery.scrolly.min.js"></script>
+				<script src="assets/js/jquery.scrollgress.min.js"></script>
+				<script src="assets/js/skel.min.js"></script>
+				<script src="assets/js/util.js"></script>
+				<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+				<script src="assets/js/main.js"></script>
+
+				<!-- My scripts-->
+				<script src="assets/js/highcharts.js"></script>
+				<script src="assets/js/highcharts.modules.exporting.js"></script>
+
 			<!-- Header -->
 				<header id="header">
 					<h1 id="logo"><a href="index.html">Homebrew <span>by HENRIK</span></a></h1>
@@ -63,10 +77,81 @@
 							<!-- Content -->
 								<div class="content">
 									<section>
+
 										<!--<a href="#" class="image featured"><img src="images/pic04.jpg" alt="" /></a>-->
 										<div id="highcharts featured" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+										<?php
+											$servername = "localhost";
+											$username = "root";
+											$password = "";
+											$database = "homebrew";
+
+											try {
+										    $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+										    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+												$stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(tid) FROM temperatur ORDER BY tid");
+	 											$stmt->execute();
+
+												while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+													$temp = $row[0];
+													$time = $row[1];
+											    $time *= 1000; // convert from Unix timestamp to JavaScript time
+											    $data[] = "[$time, $temp]";
+													echo "[$time, $temp]";
+												}
+									    }
+											catch(PDOException $e)
+									    {
+									    	echo "Connection failed: " . $e->getMessage();
+									    }
+
+										?>
+
+										<script type="text/javascript">
+										$(function () {
+										    Highcharts.chart('highcharts featured', {
+										        chart: {
+										            type: 'line'
+										        },
+										        title: {
+										            text: 'Pappenheim IPA'
+										        },
+										        subtitle: {
+										            text: 'Batch #3:	6. Desember'
+										        },
+										        xAxis: {
+																type: 'datetime',
+																labels: {
+										                overflow: 'justify'
+										            }
+										        },
+										        yAxis: {
+										            title: {
+										                text: 'Temperatur (°C)'
+										            }
+										        },
+										        plotOptions: {
+										            line: {
+										                dataLabels: {
+										                    enabled: true
+										                },
+										                enableMouseTracking: false,
+																		pointInterval: 60000, // one minute
+										                pointStart: Date.UTC(2016, 11, 6, 22, 45, 0)
+										            }
+										        },
+										        series: [{
+										            name: 'Temperatur',
+										            data: [<?php echo join($data, ',') ?>]
+										        }]
+										    });
+										});
+										</script>
+
 										<header>
-											<h3>Dolore Amet Consequat</h3>
+											<h3>Dolore Amet Consequa</h3>
 										</header>
 										<p>Aliquam massa urna, imperdiet sit amet mi non, bibendum euismod est. Curabitur mi justo, tincidunt vel eros ullamcorper, porta cursus justo. Cras vel neque eros. Vestibulum diam quam, mollis at consectetur non, malesuada quis augue. Morbi tincidunt pretium interdum. Morbi mattis elementum orci, nec dictum massa. Morbi eu faucibus massa. Aliquam massa urna, imperdiet sit amet mi non, bibendum euismod est. Curabitur mi justo, tincidunt vel eros ullamcorper, porta cursus justo. Cras vel neque eros. Vestibulum diam.</p>
 										<p>Vestibulum diam quam, mollis at consectetur non, malesuada quis augue. Morbi tincidunt pretium interdum. Morbi mattis elementum orci, nec dictum porta cursus justo. Quisque ultricies lorem in ligula condimentum, et egestas turpis sagittis. Cras ac nunc urna. Nullam eget lobortis purus. Phasellus vitae tortor non est placerat tristique. Sed id sem et massa ornare pellentesque. Maecenas pharetra porta accumsan. </p>
@@ -148,19 +233,6 @@
 
 		</div>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.dropotron.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/jquery.scrollgress.min.js"></script>
-			<script src="assets/js/skel.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-			<script src="assets/js/main.js"></script>
-
-			<!-- My scripts-->
-			<script src="assets/js/highcharts.js"></script>
-			<script src="assets/js/highcharts.modules.exporting.js"></script>
 
 	</body>
 </html>
