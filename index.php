@@ -14,36 +14,37 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollgress.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="assets/js/main.js"></script>
+
+			<!-- My scripts-->
+			<script src="assets/js/highcharts.js"></script>
+			<script src="assets/js/highcharts.modules.exporting.js"></script>
+
 	</head>
 	<body class="no-sidebar">
 		<div id="page-wrapper">
 
-			<!-- Scripts -->
-				<script src="assets/js/jquery.min.js"></script>
-				<script src="assets/js/jquery.dropotron.min.js"></script>
-				<script src="assets/js/jquery.scrolly.min.js"></script>
-				<script src="assets/js/jquery.scrollgress.min.js"></script>
-				<script src="assets/js/skel.min.js"></script>
-				<script src="assets/js/util.js"></script>
-				<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-				<script src="assets/js/main.js"></script>
-
-				<!-- My scripts-->
-				<script src="assets/js/highcharts.js"></script>
-				<script src="assets/js/highcharts.modules.exporting.js"></script>
-
 			<!-- Header -->
 				<header id="header">
-					<h1 id="logo"><a href="index.html">Homebrew <span>by HENRIK</span></a></h1>
+					<h1 id="logo"><a href="index.php">Homebrew <span>by HENRIK</span></a></h1>
 					<nav id="nav">
 						<ul>
-							<li class="current"><a href="index.html">Welcome</a></li>
+							<li class="current"><a href="old_index.html">Welcome</a></li>
 							<li class="submenu">
 								<a href="#">Layouts</a>
 								<ul>
 									<li><a href="left-sidebar.html">Left Sidebar</a></li>
 									<li><a href="right-sidebar.html">Right Sidebar</a></li>
-									<li><a href="no-sidebar.html">No Sidebar</a></li>
+									<li><a href="index.php">No Sidebar</a></li>
 									<li><a href="contact.html">Contact</a></li>
 									<li class="submenu">
 										<a href="#">Submenu</a>
@@ -81,6 +82,7 @@
 										<!--<a href="#" class="image featured"><img src="images/pic04.jpg" alt="" /></a>-->
 										<div id="highcharts featured" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
+										<!--Connect to database and get data temperature data-->
 										<?php
 											$servername = "localhost";
 											$username = "root";
@@ -99,7 +101,6 @@
 													$time = $row[1];
 											    $time *= 1000; // convert from Unix timestamp to JavaScript time
 											    $data[] = "[$time, $temp]";
-													echo "[$time, $temp]";
 												}
 									    }
 											catch(PDOException $e)
@@ -110,44 +111,44 @@
 										?>
 
 										<script type="text/javascript">
-										$(function () {
-										    Highcharts.chart('highcharts featured', {
-										        chart: {
-										            type: 'line'
-										        },
-										        title: {
-										            text: 'Pappenheim IPA'
-										        },
-										        subtitle: {
-										            text: 'Batch #3:	6. Desember'
-										        },
-										        xAxis: {
-																type: 'datetime',
-																labels: {
-										                overflow: 'justify'
-										            }
-										        },
-										        yAxis: {
-										            title: {
-										                text: 'Temperatur (°C)'
-										            }
-										        },
-										        plotOptions: {
-										            line: {
-										                dataLabels: {
-										                    enabled: true
-										                },
-										                enableMouseTracking: false,
-																		pointInterval: 60000, // one minute
-										                pointStart: Date.UTC(2016, 11, 6, 22, 45, 0)
-										            }
-										        },
-										        series: [{
-										            name: 'Temperatur',
-										            data: [<?php echo join($data, ',') ?>]
-										        }]
-										    });
-										});
+											$(function () {
+											    Highcharts.chart('highcharts featured', {
+											        chart: {
+											            type: 'line'
+											        },
+											        title: {
+											            text: 'Pappenheim IPA'
+											        },
+											        subtitle: {
+											            text: 'Batch #3:	6. Desember'
+											        },
+											        xAxis: {
+																	type: 'datetime',
+																	labels: {
+											                overflow: 'justify'
+											            }
+											        },
+											        yAxis: {
+											            title: {
+											                text: 'Temperatur (°C)'
+											            }
+											        },
+											        plotOptions: {
+											            line: {
+											                dataLabels: {
+											                    enabled: true
+											                },
+											                enableMouseTracking: false,
+																			pointInterval: 60000, // one minute
+											                pointStart: Date.UTC(2016, 11, 6, 22, 45, 0)
+											            }
+											        },
+											        series: [{
+											            name: 'Temperatur',
+											            data: [<?php echo join($data, ',') ?>]
+											        }]
+											    });
+											});
 										</script>
 
 										<header>
