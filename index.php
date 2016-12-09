@@ -112,9 +112,14 @@
 
 										<script type="text/javascript">
 											$(function () {
+												Highcharts.setOptions({
+													global: {
+														timezoneOffset: -1 * 60
+													}
+												 });
 											    Highcharts.chart('highcharts featured', {
 											        chart: {
-											            type: 'line'
+											            type: 'spline'
 											        },
 											        title: {
 											            text: 'Pappenheim IPA'
@@ -133,10 +138,13 @@
 											                text: 'Temperatur (°C)'
 											            }
 											        },
+															tooltip: {
+									            	valueSuffix: ' °C'
+											        },
 											        plotOptions: {
 											            line: {
 											                dataLabels: {
-											                    enabled: true
+											                    enabled: false
 											                },
 											                enableMouseTracking: false,
 																			pointInterval: 60000, // one minute
