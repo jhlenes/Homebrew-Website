@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <!--
-Twenty by HTML5 UP
-html5up.net | @ajlkn
-Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+	Twenty by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
 <head>
@@ -84,29 +84,27 @@ Free for personal and commercial use under the CCA 3.0 license (html5up.net/lice
 
 						<!--Connect to database and get data temperature data-->
 						<?php
-						$servername = "localhost";
-						$username = "root";
-						$password = "";
-						$database = "homebrew";
+							$servername = "localhost";
+							$username = "root";
+							$password = "";
+							$database = "homebrew";
 
-						try {
-							$conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
-							$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+							try {
+								$conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+								$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-							$stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(tid) FROM temperatur ORDER BY tid");
-							$stmt->execute();
+								$stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(tid) FROM temperatur ORDER BY tid");
+								$stmt->execute();
 
-							while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-								$temp = $row[0];
-								$time = $row[1];
-								$time *= 1000; // convert from Unix timestamp to JavaScript time
-								$data[] = "[$time, $temp]";
+								while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+									$temp = $row[0];
+									$time = $row[1];
+									$time *= 1000; // convert from Unix timestamp to JavaScript time
+									$data[] = "[$time, $temp]";
+								}
+							} catch (PDOException $e) {
+								echo "Connection failed: " . $e->getMessage();
 							}
-						}
-						catch(PDOException $e)
-						{
-							echo "Connection failed: " . $e->getMessage();
-						}
 						?>
 
 						<script type="text/javascript">
@@ -159,88 +157,88 @@ Free for personal and commercial use under the CCA 3.0 license (html5up.net/lice
 						</script>
 
 						<header>
-						<h3>Dolore Amet Consequa</h3>
+							<h3>Dolore Amet Consequa</h3>
 						</header>
 						<p>Aliquam massa urna, imperdiet sit amet mi non, bibendum euismod est. Curabitur mi justo, tincidunt vel eros ullamcorper, porta cursus justo. Cras vel neque eros. Vestibulum diam quam, mollis at consectetur non, malesuada quis augue. Morbi tincidunt pretium interdum. Morbi mattis elementum orci, nec dictum massa. Morbi eu faucibus massa. Aliquam massa urna, imperdiet sit amet mi non, bibendum euismod est. Curabitur mi justo, tincidunt vel eros ullamcorper, porta cursus justo. Cras vel neque eros. Vestibulum diam.</p>
 						<p>Vestibulum diam quam, mollis at consectetur non, malesuada quis augue. Morbi tincidunt pretium interdum. Morbi mattis elementum orci, nec dictum porta cursus justo. Quisque ultricies lorem in ligula condimentum, et egestas turpis sagittis. Cras ac nunc urna. Nullam eget lobortis purus. Phasellus vitae tortor non est placerat tristique. Sed id sem et massa ornare pellentesque. Maecenas pharetra porta accumsan. </p>
 						<p>In vestibulum massa quis arcu lobortis tempus. Nam pretium arcu in odio vulputate luctus. Suspendisse euismod lorem eget lacinia fringilla. Sed sed felis justo. Nunc sodales elit in laoreet aliquam. Nam gravida, nisl sit amet iaculis porttitor, risus nisi rutrum metus, non hendrerit ipsum arcu tristique est.</p>
-						</section>
-						</div>
+					</section>
+				</div>
 
+			</section>
+
+			<!-- Two -->
+			<section class="wrapper style1 container special">
+				<div class="row">
+					<div class="4u 12u(narrower)">
+
+						<section>
+							<header>
+								<h3>This is Something</h3>
+							</header>
+							<p>Sed tristique purus vitae volutpat ultrices. Aliquam eu elit eget arcu commodo suscipit dolor nec nibh. Proin a ullamcorper elit, et sagittis turpis. Integer ut fermentum.</p>
+							<footer>
+								<ul class="buttons">
+									<li><a href="#" class="button small">Learn More</a></li>
+								</ul>
+							</footer>
 						</section>
 
-						<!-- Two -->
-						<section class="wrapper style1 container special">
-						<div class="row">
-						<div class="4u 12u(narrower)">
+					</div>
+					<div class="4u 12u(narrower)">
+
+						<section>
+							<header>
+								<h3>Also Something</h3>
+							</header>
+							<p>Sed tristique purus vitae volutpat ultrices. Aliquam eu elit eget arcu commodo suscipit dolor nec nibh. Proin a ullamcorper elit, et sagittis turpis. Integer ut fermentum.</p>
+							<footer>
+								<ul class="buttons">
+									<li><a href="#" class="button small">Learn More</a></li>
+								</ul>
+							</footer>
+						</section>
+
+					</div>
+					<div class="4u 12u(narrower)">
 
 						<section>
 						<header>
-						<h3>This is Something</h3>
+							<h3>Probably Something</h3>
 						</header>
 						<p>Sed tristique purus vitae volutpat ultrices. Aliquam eu elit eget arcu commodo suscipit dolor nec nibh. Proin a ullamcorper elit, et sagittis turpis. Integer ut fermentum.</p>
 						<footer>
-						<ul class="buttons">
-						<li><a href="#" class="button small">Learn More</a></li>
-						</ul>
+							<ul class="buttons">
+								<li><a href="#" class="button small">Learn More</a></li>
+							</ul>
 						</footer>
 						</section>
 
-						</div>
-						<div class="4u 12u(narrower)">
+					</div>
+				</div>
+			</section>
 
-						<section>
-						<header>
-						<h3>Also Something</h3>
-						</header>
-						<p>Sed tristique purus vitae volutpat ultrices. Aliquam eu elit eget arcu commodo suscipit dolor nec nibh. Proin a ullamcorper elit, et sagittis turpis. Integer ut fermentum.</p>
-						<footer>
-						<ul class="buttons">
-						<li><a href="#" class="button small">Learn More</a></li>
-						</ul>
-						</footer>
-						</section>
+		</article>
 
-						</div>
-						<div class="4u 12u(narrower)">
+		<!-- Footer -->
+		<footer id="footer">
 
-						<section>
-						<header>
-						<h3>Probably Something</h3>
-						</header>
-						<p>Sed tristique purus vitae volutpat ultrices. Aliquam eu elit eget arcu commodo suscipit dolor nec nibh. Proin a ullamcorper elit, et sagittis turpis. Integer ut fermentum.</p>
-						<footer>
-						<ul class="buttons">
-						<li><a href="#" class="button small">Learn More</a></li>
-						</ul>
-						</footer>
-						</section>
+			<ul class="icons">
+				<li><a href="#" class="icon circle fa-twitter"><span class="label">Twitter</span></a></li>
+				<li><a href="#" class="icon circle fa-facebook"><span class="label">Facebook</span></a></li>
+				<li><a href="#" class="icon circle fa-google-plus"><span class="label">Google+</span></a></li>
+				<li><a href="#" class="icon circle fa-github"><span class="label">Github</span></a></li>
+				<li><a href="#" class="icon circle fa-dribbble"><span class="label">Dribbble</span></a></li>
+			</ul>
 
-						</div>
-						</div>
-						</section>
+			<ul class="copyright">
+				<li>&copy; Henrik Lenes</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+			</ul>
 
-						</article>
+		</footer>
 
-						<!-- Footer -->
-						<footer id="footer">
-
-						<ul class="icons">
-						<li><a href="#" class="icon circle fa-twitter"><span class="label">Twitter</span></a></li>
-						<li><a href="#" class="icon circle fa-facebook"><span class="label">Facebook</span></a></li>
-						<li><a href="#" class="icon circle fa-google-plus"><span class="label">Google+</span></a></li>
-						<li><a href="#" class="icon circle fa-github"><span class="label">Github</span></a></li>
-						<li><a href="#" class="icon circle fa-dribbble"><span class="label">Dribbble</span></a></li>
-						</ul>
-
-						<ul class="copyright">
-						<li>&copy; Henrik Lenes</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-						</ul>
-
-						</footer>
-
-						</div>
+	</div>
 
 
-						</body>
-						</html>
+</body>
+</html>
