@@ -108,10 +108,10 @@
 
 							// Plot the set curve
 							$i = 1;
-							while (isset($_GET["point" . $i])) {
+							while (isset($_POST["point" . $i])) {
 
 								// Get X and Y value from the point
-								$point = explode(',', $_GET["point" . $i++]);
+								$point = explode(',', $_POST["point" . $i++]);
 								if (count($point) == 2) {
 
 									// Convert time value (hours from now), to JavaScript time
@@ -185,8 +185,8 @@
 						<header>
 							<h3>Set a temperature curve to follow: </h3>
 						</header>
-						<form>
-							<div class="row 50%">
+						<form method="post">
+							<div class="insert_fields row 50%">
 								<div class="3u 12u(mobile)">
 									<input type="text" name="point1" placeholder="x, y" />
 								</div>
@@ -200,10 +200,12 @@
 									<input type="text" name="point4" placeholder="x, y" />
 								</div>
 							</div>
-							<div class="row">
+							<div class="row 50%">
 								<div class="12u">
 									<ul class="buttons">
 										<li><input type="submit" class="special" value="Submit" /></li>
+										<li><input type="button" class="add_field" value="Add field" /></li>
+										<li><input type="button" class="remove_field" value="Remove field" /></li>
 									</ul>
 								</div>
 							</div>
