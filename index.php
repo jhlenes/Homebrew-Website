@@ -105,6 +105,22 @@
 							} catch (PDOException $e) {
 								echo "Connection failed: " . $e->getMessage();
 							}
+
+							// Plot the set curve
+							$i = 1;
+							while (isset($_GET["point" . $i])) {
+
+								// Get X and Y value from the point
+								$point = explode(',', $_GET["point" . $i++]);
+								if (count($point) == 2) {
+
+									// Convert time value (hours from now), to JavaScript time
+									$time = 1000*(time() + 3600*intval($point[0]));
+									$temp = $point[1];
+									$setCurve[] = "[$time, $temp]";
+								}
+							}
+
 						?>
 
 						<script type="text/javascript">
@@ -143,19 +159,58 @@
 										dataLabels: {
 											enabled: false
 										},
-										enableMouseTracking: false,
-										pointInterval: 60000, // one minute
-										pointStart: Date.UTC(2016, 11, 6, 22, 45, 0)
+										enableMouseTracking: true
 									}
 								},
 								series: [{
 									name: 'Temperatur',
 									data: [<?php echo join($data, ',') ?>]
-								}]
+								}
+								<?php
+									if (isset($setCurve)) {
+										echo ", {
+											type: 'line',
+											name: 'Set curve',
+											data: [" . join($setCurve, ',') . "]
+										}";
+									}
+								?>
+								]
 							});
 						});
 						</script>
+					</section>
 
+					<section>
+						<header>
+							<h3>Set a temperature curve to follow: </h3>
+						</header>
+						<form>
+							<div class="row 50%">
+								<div class="3u 12u(mobile)">
+									<input type="text" name="point1" placeholder="x, y" />
+								</div>
+								<div class="3u 12u(mobile)">
+									<input type="text" name="point2" placeholder="x, y" />
+								</div>
+								<div class="3u 12u(mobile)">
+									<input type="text" name="point3" placeholder="x, y" />
+								</div>
+								<div class="3u 12u(mobile)">
+									<input type="text" name="point4" placeholder="x, y" />
+								</div>
+							</div>
+							<div class="row">
+								<div class="12u">
+									<ul class="buttons">
+										<li><input type="submit" class="special" value="Submit" /></li>
+									</ul>
+								</div>
+							</div>
+						</form>
+					</section>
+
+					<section>
 						<header>
 							<h3>Dolore Amet Consequa</h3>
 						</header>
