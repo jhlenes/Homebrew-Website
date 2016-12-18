@@ -69,8 +69,7 @@
 
 			<header class="special container">
 				<span class="icon fa-beer"></span>
-				<h2><strong>Homebrew</strong></h2>
-				<p>Where you control your beer.</p>
+				<h2><strong>Start a new batch</strong></h2>
 			</header>
 
 			<!-- One -->
@@ -83,103 +82,37 @@
 						<!--<a href="#" class="image featured"><img src="images/pic04.jpg" alt="" /></a>-->
 						<div id="highcharts featured" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
-						<!--Connect to database and get data temperature data-->
-						<?php
-							$servername = "localhost";
-							$username = "root";
-							$password = "";
-							$database = "homebrew";
+					</section>
 
-							try {
-								$conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
-								$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-								$stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(tid) FROM temperatur ORDER BY tid");
-								$stmt->execute();
-
-								while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-									$temp = $row[0];
-									$time = $row[1];
-									$time *= 1000; // convert from Unix timestamp to JavaScript time
-									$data[] = "[$time, $temp]";
-								}
-							} catch (PDOException $e) {
-								echo "Connection failed: " . $e->getMessage();
-							}
-
-							// Plot the set curve
-							$i = 1;
-							while (isset($_GET["point" . $i])) {
-
-								// Get X and Y value from the point
-								$point = explode(',', $_GET["point" . $i++]);
-								if (count($point) == 2) {
-
-									// Convert time value (hours from now), to JavaScript time
-									$time = 1000*(time() + 3600*intval($point[0]));
-									$temp = $point[1];
-									$setCurve[] = "[$time, $temp]";
-								}
-							}
-
-						?>
-
-						<script type="text/javascript">
-						$(function () {
-							Highcharts.setOptions({
-								global: {
-									timezoneOffset: -1 * 60
-								}
-							});
-							Highcharts.chart('highcharts featured', {
-								chart: {
-									type: 'spline'
-								},
-								title: {
-									text: 'Pappenheim IPA'
-								},
-								subtitle: {
-									text: 'Batch #3:	6. Desember'
-								},
-								xAxis: {
-									type: 'datetime',
-									labels: {
-										overflow: 'justify'
-									}
-								},
-								yAxis: {
-									title: {
-										text: 'Temperatur (°C)'
-									}
-								},
-								tooltip: {
-									valueSuffix: ' °C'
-								},
-								plotOptions: {
-									line: {
-										dataLabels: {
-											enabled: false
-										},
-										enableMouseTracking: true
-									}
-								},
-								series: [{
-									name: 'Temperatur',
-									data: [<?php echo join($data, ',') ?>]
-								}
-								<?php
-									if (isset($setCurve)) {
-										echo ", {
-											type: 'line',
-											name: 'Set curve',
-											data: [" . join($setCurve, ',') . "]
-										}";
-									}
-								?>
-								]
-							});
-						});
-						</script>
+					<section>
+						<header>
+							<h3>New Batch</h3>
+						</header>
+						<form>
+							<div class="insert_fields row 50%" id="insert_fields">
+								<div class="3u 12u(mobile)">
+									<input type="text" id="point1" placeholder="<Hours>,<Temp>" />
+								</div>
+								<div class="3u 12u(mobile)">
+									<input type="text" id="point2" placeholder="<Hours>,<Temp>" />
+								</div>
+								<div class="3u 12u(mobile)">
+									<input type="text" id="point3" placeholder="<Hours>,<Temp>" />
+								</div>
+								<div class="3u 12u(mobile)">
+									<input type="text" id="point4" placeholder="<Hours>,<Temp>" />
+								</div>
+							</div>
+							<div class="row 50%">
+								<div class="12u">
+									<ul class="buttons">
+										<li><input type="button" class="add_field" value="Add field" /></li>
+										<li><input type="button" class="remove_field" value="Remove field" /></li>
+                    <li><input type="submit" class="special" value="Submit" /></li>
+									</ul>
+								</div>
+							</div>
+						</form>
 					</section>
 
 					<section>
@@ -266,6 +199,104 @@
 
 	</div>
 
+  <!-- Scripts for datafields and chart -->
+  <script type="text/javascript">
+
+    $(document).ready(function() {
+    		var numFields = 4;
+        var maxFields = 12;
+        var wrapper = $(".insert_fields");
+        var addButton = $(".add_field");
+    		var removeButton = $(".remove_field");
+
+        $(addButton).click(function(e){ //on add input button click
+            e.preventDefault();
+            if(numFields < maxFields){ //max input box allowed
+    					numFields++; //text box increment
+              $(wrapper).append('<div class="3u 12u(mobile)"><input type="text" id="point' + numFields + '" placeholder="<Hours>,<Temp>"/></div>'); //add input box
+            }
+        });
+
+    		$(removeButton).click(function(e){
+    			e.preventDefault();
+    			if (numFields > 4) {
+    				numFields--;
+    				wrapper.children().last().remove();
+    			}
+    		});
+
+    });
+
+    $(function () {
+      Highcharts.setOptions({
+        global: {
+          timezoneOffset: -1 * 60
+        }
+      });
+      var chart = Highcharts.chart('highcharts featured', {
+        chart: {
+          type: 'spline'
+        },
+        title: {
+          text: 'Pappenheim IPA'
+        },
+        subtitle: {
+          text: 'Batch #3:	6. Desember'
+        },
+        xAxis: {
+          type: 'datetime',
+          labels: {
+            overflow: 'justify'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Temperatur (°C)'
+          }
+        },
+        tooltip: {
+          valueSuffix: ' °C'
+        },
+        plotOptions: {
+          line: {
+            dataLabels: {
+              enabled: false
+            },
+            enableMouseTracking: true
+          }
+        },
+        series: [{
+              type: 'line',
+              name: 'Set curve',
+              data: []
+            }
+        ]
+      });
+
+
+      // This function is called everytime focus goes away from a insert field
+      $('.insert_fields').on("blur", "input[id^='point']", function() {
+        var num = parseInt($(this).attr('id').substring(5));  // Point number
+        var point = document.getElementById($(this).attr('id')).value;
+        var splitted = point.split(",");
+        if (splitted.length == 2) {
+          var time = + new Date() + 1000*parseInt(splitted[0])*3600;
+          var temp = parseFloat(splitted[1]);
+
+          if (typeof chart.series[0].data[num-1] !== 'undefined') { // if point already exists
+            chart.series[0].data[num-1].update({
+              x:time,
+              y:temp
+            });
+          } else {
+            chart.series[0].addPoint([time, temp]);
+          }
+        }
+      });
+
+    });
+
+  </script>
 
 </body>
 </html>

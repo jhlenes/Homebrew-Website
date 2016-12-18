@@ -116,29 +116,3 @@
 	});
 
 })(jQuery);
-
-$(document).ready(function() {
-		var initial_fields  = 4;
-    var max_fields      = 12; //maximum input boxes allowed
-    var wrapper         = $(".insert_fields"); //Fields wrapper
-    var add_button      = $(".add_field"); //Add button ID
-		var remove_button		= $(".remove_field");
-    var x 							= initial_fields; //initlal text box count
-
-    $(add_button).click(function(e){ //on add input button click
-        e.preventDefault();
-        if(x < max_fields){ //max input box allowed
-            x++; //text box increment
-            $(wrapper).append('<div class="3u 12u(mobile)"><input type="text" name="point' + x + '" placeholder="x, y"/></div>'); //add input box
-        }
-    });
-
-		$(remove_button).click(function(e){
-			e.preventDefault();
-			if (x > initial_fields) {
-				x--;
-				wrapper.children().last().remove();
-			}
-		});
-
-});
