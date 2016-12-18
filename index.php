@@ -87,14 +87,14 @@
 							$servername = "localhost";
 							$username = "root";
 							$password = "";
-							$database = "homebrew2";
+							$database = "homebrew";
 
 
 							$conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
 							$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 							// Get measurements
-							$stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(time) FROM measurement WHERE Batch_id = (SELECT MAX(number) FROM batch)");
+							$stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(time) FROM measurement WHERE batch_id = (SELECT MAX(id) FROM batch)");
 							$stmt->execute();
 							while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
 								$temp = $row[0];
@@ -104,7 +104,7 @@
 							}
 
 							// Get batch data
-							$stmt = $conn->prepare("SELECT number, type, UNIX_TIMESTAMP(date) FROM batch WHERE number = (SELECT MAX(number) FROM batch)");
+							$stmt = $conn->prepare("SELECT id, type, UNIX_TIMESTAMP(date) FROM batch WHERE id = (SELECT MAX(id) FROM batch)");
 							$stmt->execute();
 							$row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
 							$number = $row[0];
@@ -113,7 +113,7 @@
 							$startTimeFormatted = date("d-m-Y", $startTime);
 
 							// Get set points for set curve
-							$stmt = $conn->prepare("SELECT temperature, hours FROM point WHERE Batch_id = (SELECT MAX(number) FROM batch)");
+							$stmt = $conn->prepare("SELECT temp, hours FROM point WHERE Batch_id = (SELECT MAX(id) FROM batch)");
 							$stmt->execute();
 							while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
 								$setTemp = $row[0];
@@ -121,14 +121,6 @@
 								$setTime *= 1000; // convert from Unix timestamp to JavaScript time
 								$setCurve[] = "[$setTime, $setTemp]";
 							}
-
-							// Get batch data
-							$stmt = $conn->prepare("SELECT number, type, UNIX_TIMESTAMP(date) FROM batch WHERE number = (SELECT MAX(number) FROM batch)");
-							$stmt->execute();
-							$row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
-							$number = $row[0];
-							$type = $row[1];
-							$startTime = $row[2];
 
 						?>
 
@@ -174,17 +166,11 @@
 								series: [{
 									name: 'Temperatur',
 									data: [<?php if (isset($data)) {echo join($data, ',');} ?>]
-								}
-								<?php
-									if (isset($setCurve)) {
-										echo ", {
-											type: 'line',
-											name: 'Set curve',
-											data: [" . join($setCurve, ',') . "]
-										}";
-									}
-								?>
-								]
+								}, {
+									type: 'line',
+									name: 'Set curve',
+									data: [<?php if (isset($setCurve)) {echo join($setCurve, ',');} ?>]
+								}]
 							});
 						});
 						</script>

@@ -34,12 +34,12 @@
     $servername = "localhost";
     $username = "root";
     $password = "";
-    $database = "homebrew2";
+    $database = "homebrew";
 
     $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $stmt = $conn->prepare("SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'homebrew2' AND TABLE_NAME = 'batch'");
+    $stmt = $conn->prepare("SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'homebrew' AND TABLE_NAME = 'batch'");
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
 
@@ -63,13 +63,13 @@
       }
 
       // Create new batch
-      $stmt = $conn->prepare("INSERT INTO `batch`(`number`, `type`, `date`) VALUES (NULL, :type, FROM_UNIXTIME(:timeNow))");
+      $stmt = $conn->prepare("INSERT INTO `batch`(`id`, `type`, `date`) VALUES (NULL, :type, FROM_UNIXTIME(:timeNow))");
       $stmt->bindParam(':type', $type);
       $stmt->bindParam(':timeNow', $timeNow);
       $stmt->execute();
 
       // Add points to batch
-      $stmt = $conn->prepare("INSERT INTO `point`(`hours`, `temperature`, `Batch_id`) VALUES (:hours, :temp, :batchid)");
+      $stmt = $conn->prepare("INSERT INTO `point`(`hours`, `temp`, `batch_id`) VALUES (:hours, :temp, :batchid)");
       $stmt->bindParam(':batchid', $num);
       for ($j = 1; $j < $i; $j++) {
         $stmt->bindParam(':hours', $hours[$j-1]);
