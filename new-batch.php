@@ -16,18 +16,41 @@
 	<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 
 	<!-- Scripts -->
-	<script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/jquery.dropotron.min.js"></script>
-	<script src="assets/js/jquery.scrolly.min.js"></script>
-	<script src="assets/js/jquery.scrollgress.min.js"></script>
-	<script src="assets/js/skel.min.js"></script>
-	<script src="assets/js/util.js"></script>
-	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-	<script src="assets/js/main.js"></script>
+  	<script src="assets/js/jquery.min.js"></script>
+  	<script src="assets/js/jquery.dropotron.min.js"></script>
+  	<script src="assets/js/jquery.scrolly.min.js"></script>
+  	<script src="assets/js/jquery.scrollgress.min.js"></script>
+  	<script src="assets/js/skel.min.js"></script>
+  	<script src="assets/js/util.js"></script>
+  	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+  	<script src="assets/js/main.js"></script>
 
-	<!-- My scripts-->
-	<script src="assets/js/highcharts.js"></script>
-	<script src="assets/js/highcharts.modules.exporting.js"></script>
+  	<script src="assets/js/highcharts.js"></script>
+  	<script src="assets/js/highcharts.modules.exporting.js"></script>
+
+
+  <!-- Database connection -->
+  <?php
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $database = "homebrew2";
+
+    try {
+      $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+      $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+      $stmt = $conn->prepare("SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'homebrew2' AND TABLE_NAME = 'batch'");
+      $stmt->execute();
+      $row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
+
+      $num = $row[0];
+      $time = date("d-m-Y");
+
+    } catch (PDOException $e) {
+      echo "Connection failed: " . $e->getMessage();
+    }
+  ?>
 
 </head>
 <body class="no-sidebar">
@@ -69,7 +92,7 @@
 
 			<header class="special container">
 				<span class="icon fa-beer"></span>
-				<h2><strong>Start a new batch</strong></h2>
+				<h2>Start a new batch</h2>
 			</header>
 
 			<!-- One -->
@@ -85,34 +108,40 @@
 					</section>
 
 					<section>
-						<header>
-							<h3>New Batch</h3>
-						</header>
+            <header>
+              <h3>Give me the details</h3>
+            </header>
 						<form>
-							<div class="insert_fields row 50%" id="insert_fields">
+              <div class="row 50%">
+                <div class="12u">
+                  <input type="text" name="type" id="type" placeholder="Type" />
+                </div>
+              </div>
+							<div class="insert_fields row 50%">
 								<div class="3u 12u(mobile)">
-									<input type="text" id="point1" placeholder="<Hours>,<Temp>" />
+									<input type="text" name="point1" id="point1" placeholder="<Hours>,<Temp>" />
 								</div>
 								<div class="3u 12u(mobile)">
-									<input type="text" id="point2" placeholder="<Hours>,<Temp>" />
+									<input type="text" name="point2" id="point2" placeholder="<Hours>,<Temp>" />
 								</div>
 								<div class="3u 12u(mobile)">
-									<input type="text" id="point3" placeholder="<Hours>,<Temp>" />
+									<input type="text" name="point3" id="point3" placeholder="<Hours>,<Temp>" />
 								</div>
 								<div class="3u 12u(mobile)">
-									<input type="text" id="point4" placeholder="<Hours>,<Temp>" />
+									<input type="text" name="point4" id="point4" placeholder="<Hours>,<Temp>" />
 								</div>
 							</div>
-							<div class="row 50%">
+							<div class="row">
 								<div class="12u">
 									<ul class="buttons">
-										<li><input type="button" class="add_field" value="Add field" /></li>
-										<li><input type="button" class="remove_field" value="Remove field" /></li>
+										<li><input type="button" class="add_field" value="Add point" /></li>
+										<li><input type="button" class="remove_field" value="Remove point" /></li>
                     <li><input type="submit" class="special" value="Submit" /></li>
 									</ul>
 								</div>
 							</div>
 						</form>
+            <div class="row 50%"><div class="12u"></div><div class="12u"></div></div>
 					</section>
 
 					<section>
@@ -213,7 +242,7 @@
             e.preventDefault();
             if(numFields < maxFields){ //max input box allowed
     					numFields++; //text box increment
-              $(wrapper).append('<div class="3u 12u(mobile)"><input type="text" id="point' + numFields + '" placeholder="<Hours>,<Temp>"/></div>'); //add input box
+              $(wrapper).append('<div class="3u 12u(mobile)"><input type="text" name="point' + numFields + '" id="point' + numFields + '" placeholder="<Hours>,<Temp>"/></div>'); //add input box
             }
         });
 
@@ -235,13 +264,13 @@
       });
       var chart = Highcharts.chart('highcharts featured', {
         chart: {
-          type: 'spline'
+          type: 'line'
         },
         title: {
-          text: 'Pappenheim IPA'
+          text: 'Type'
         },
         subtitle: {
-          text: 'Batch #3:	6. Desember'
+          text: "<?php echo "Batch #$num: $time"; ?>"
         },
         xAxis: {
           type: 'datetime',
@@ -266,7 +295,6 @@
           }
         },
         series: [{
-              type: 'line',
               name: 'Set curve',
               data: []
             }
@@ -274,19 +302,27 @@
       });
 
 
+      $('form').on("blur", "input[id*='type']", function () {
+        chart.setTitle({
+          text: document.getElementById($(this).attr('id')).value
+        });
+      });
+
+      var currentDate =  parseInt(+ new Date() / 1000); // Reduce resolution from milliseconds to seconds
+
       // This function is called everytime focus goes away from a insert field
-      $('.insert_fields').on("blur", "input[id^='point']", function() {
+      $('form').on("blur", "input[id^='point']", function () {
         var num = parseInt($(this).attr('id').substring(5));  // Point number
         var point = document.getElementById($(this).attr('id')).value;
         var splitted = point.split(",");
         if (splitted.length == 2) {
-          var time = + new Date() + 1000*parseInt(splitted[0])*3600;
+          var time = 1000*(+ currentDate + parseInt(splitted[0])*3600);
           var temp = parseFloat(splitted[1]);
 
           if (typeof chart.series[0].data[num-1] !== 'undefined') { // if point already exists
             chart.series[0].data[num-1].update({
-              x:time,
-              y:temp
+              x: time,
+              y: temp
             });
           } else {
             chart.series[0].addPoint([time, temp]);
