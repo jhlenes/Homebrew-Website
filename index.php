@@ -70,7 +70,6 @@
 			<header class="special container">
 				<span class="icon fa-beer"></span>
 				<h2><strong>Homebrew</strong></h2>
-				<p>Where you control your beer.</p>
 			</header>
 
 			<!-- One -->
@@ -88,39 +87,48 @@
 							$servername = "localhost";
 							$username = "root";
 							$password = "";
-							$database = "homebrew";
+							$database = "homebrew2";
 
-							try {
-								$conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
-								$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-								$stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(tid) FROM temperatur ORDER BY tid");
-								$stmt->execute();
+							$conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+							$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-								while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-									$temp = $row[0];
-									$time = $row[1];
-									$time *= 1000; // convert from Unix timestamp to JavaScript time
-									$data[] = "[$time, $temp]";
-								}
-							} catch (PDOException $e) {
-								echo "Connection failed: " . $e->getMessage();
+							// Get measurements
+							$stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(time) FROM measurement WHERE Batch_id = (SELECT MAX(number) FROM batch)");
+							$stmt->execute();
+							while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+								$temp = $row[0];
+								$time = $row[1];
+								$time *= 1000; // convert from Unix timestamp to JavaScript time
+								$data[] = "[$time, $temp]";
 							}
 
-							// Plot the set curve
-							$i = 1;
-							while (isset($_GET["point" . $i])) {
+							// Get batch data
+							$stmt = $conn->prepare("SELECT number, type, UNIX_TIMESTAMP(date) FROM batch WHERE number = (SELECT MAX(number) FROM batch)");
+							$stmt->execute();
+							$row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
+							$number = $row[0];
+							$type = $row[1];
+							$startTime = $row[2];
+							$startTimeFormatted = date("d-m-Y", $startTime);
 
-								// Get X and Y value from the point
-								$point = explode(',', $_GET["point" . $i++]);
-								if (count($point) == 2) {
-
-									// Convert time value (hours from now), to JavaScript time
-									$time = 1000*(time() + 3600*intval($point[0]));
-									$temp = $point[1];
-									$setCurve[] = "[$time, $temp]";
-								}
+							// Get set points for set curve
+							$stmt = $conn->prepare("SELECT temperature, hours FROM point WHERE Batch_id = (SELECT MAX(number) FROM batch)");
+							$stmt->execute();
+							while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+								$setTemp = $row[0];
+								$setTime = $startTime + $row[1]*3600;
+								$setTime *= 1000; // convert from Unix timestamp to JavaScript time
+								$setCurve[] = "[$setTime, $setTemp]";
 							}
+
+							// Get batch data
+							$stmt = $conn->prepare("SELECT number, type, UNIX_TIMESTAMP(date) FROM batch WHERE number = (SELECT MAX(number) FROM batch)");
+							$stmt->execute();
+							$row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
+							$number = $row[0];
+							$type = $row[1];
+							$startTime = $row[2];
 
 						?>
 
@@ -136,10 +144,10 @@
 									type: 'spline'
 								},
 								title: {
-									text: 'Pappenheim IPA'
+									text: '<?php echo $type ?>'
 								},
 								subtitle: {
-									text: 'Batch #3:	6. Desember'
+									text: 'Batch #<?php echo "$number: $startTimeFormatted"?>'
 								},
 								xAxis: {
 									type: 'datetime',
@@ -165,7 +173,7 @@
 								},
 								series: [{
 									name: 'Temperatur',
-									data: [<?php echo join($data, ',') ?>]
+									data: [<?php if (isset($data)) {echo join($data, ',');} ?>]
 								}
 								<?php
 									if (isset($setCurve)) {

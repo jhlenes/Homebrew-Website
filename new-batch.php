@@ -36,20 +36,53 @@
     $password = "";
     $database = "homebrew2";
 
-    try {
-      $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
-      $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-      $stmt = $conn->prepare("SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'homebrew2' AND TABLE_NAME = 'batch'");
+    $stmt = $conn->prepare("SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'homebrew2' AND TABLE_NAME = 'batch'");
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
+
+    $num = $row[0];
+    $dateNow = date("d-m-Y");
+
+    // -------------------- Handle submit --------------------
+    if (isset($_GET["type"])) {
+      $type = $_GET["type"];
+
+      $timeNow = time();
+      $i = 1;
+      while (isset($_GET["point" . $i])) {
+
+        // Get X and Y value from the point
+        $point = explode(',', $_GET["point" . $i++]);
+
+        $hours[] = intval($point[0]);
+
+        $temp[] = $point[1];
+      }
+
+      // Create new batch
+      $stmt = $conn->prepare("INSERT INTO `batch`(`number`, `type`, `date`) VALUES (NULL, :type, FROM_UNIXTIME(:timeNow))");
+      $stmt->bindParam(':type', $type);
+      $stmt->bindParam(':timeNow', $timeNow);
       $stmt->execute();
-      $row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
 
-      $num = $row[0];
-      $time = date("d-m-Y");
+      // Add points to batch
+      $stmt = $conn->prepare("INSERT INTO `point`(`hours`, `temperature`, `Batch_id`) VALUES (:hours, :temp, :batchid)");
+      $stmt->bindParam(':batchid', $num);
+      for ($j = 1; $j < $i; $j++) {
+        $stmt->bindParam(':hours', $hours[$j-1]);
+        $stmt->bindParam(':temp', $temp[$j-1]);
+        $stmt->execute();
+      }
 
-    } catch (PDOException $e) {
-      echo "Connection failed: " . $e->getMessage();
+      // Go to index.php
+      header("Location: /Homebrew");
+      exit;
+
     }
+
   ?>
 
 </head>
@@ -111,7 +144,7 @@
             <header>
               <h3>Give me the details</h3>
             </header>
-						<form>
+						<form onsubmit="return confirm('Er du sikker? Dette vil sette i gang prosessen med de oppgitte dataene.');">
               <div class="row 50%">
                 <div class="12u">
                   <input type="text" name="type" id="type" placeholder="Type" />
@@ -248,7 +281,7 @@
 
     		$(removeButton).click(function(e){
     			e.preventDefault();
-    			if (numFields > 4) {
+    			if (numFields > 2) {
     				numFields--;
     				wrapper.children().last().remove();
     			}
@@ -270,7 +303,7 @@
           text: 'Type'
         },
         subtitle: {
-          text: "<?php echo "Batch #$num: $time"; ?>"
+          text: "<?php echo "Batch #$num: $dateNow"; ?>"
         },
         xAxis: {
           type: 'datetime',
@@ -331,6 +364,11 @@
       });
 
     });
+
+    function validateForm() {
+
+    }
+
 
   </script>
 
