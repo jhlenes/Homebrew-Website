@@ -331,7 +331,10 @@
               name: 'Set curve',
               data: []
             }
-        ]
+        ],
+				credits: {
+					enabled: false
+				}				
       });
 
 

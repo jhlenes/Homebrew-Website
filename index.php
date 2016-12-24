@@ -170,7 +170,10 @@
 									type: 'line',
 									name: 'Set curve',
 									data: [<?php if (isset($setCurve)) {echo join($setCurve, ',');} ?>]
-								}]
+								}],
+								credits: {
+							    enabled: false
+							  }
 							});
 						});
 						</script>
