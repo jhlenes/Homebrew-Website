@@ -63,7 +63,7 @@
       }
 
       // Create new batch
-      $stmt = $conn->prepare("INSERT INTO `batch`(`id`, `type`, `date`) VALUES (NULL, :type, FROM_UNIXTIME(:timeNow))");
+      $stmt = $conn->prepare("INSERT INTO `batch`(`id`, `type`, `date`, `is_running`) VALUES (NULL, :type, FROM_UNIXTIME(:timeNow), 1)");
       $stmt->bindParam(':type', $type);
       $stmt->bindParam(':timeNow', $timeNow);
       $stmt->execute();
@@ -334,7 +334,7 @@
         ],
 				credits: {
 					enabled: false
-				}				
+				}
       });
 
 
