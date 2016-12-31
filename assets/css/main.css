@@ -2651,6 +2651,13 @@
 				padding-top: 1.5em;
 			}
 
+			/* List */
+
+			ul.buttons li {
+				display: block;
+				padding: 1em 0 0 0;
+			}
+
 		/* Wrapper */
 
 			.wrapper {
