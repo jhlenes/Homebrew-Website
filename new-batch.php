@@ -94,10 +94,11 @@
 			<nav id="nav">
 				<ul>
 					<li class="current"><a href="new-batch">New Batch</a></li>
-					<li class="current"><a href="previous-batches">Previuos batches</a></li>
+					<li class="current"><a href="previous-batches">Previous batches</a></li>
 					<li class="submenu">
 						<a href="#">More stuff</a>
 						<ul>
+							<li><a href="old_index">Welcome</a></li>
 							<li><a href="left-sidebar">Left Sidebar</a></li>
 							<li><a href="right-sidebar">Right Sidebar</a></li>
 							<li><a href="contact">Contact</a></li>

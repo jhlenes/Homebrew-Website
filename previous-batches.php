@@ -1,3 +1,51 @@
+<?php
+  $servername = "localhost";
+  $username = "root";
+  $password = "";
+  $database = "homebrew";
+
+  $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+  // -------------------- Get selected batch --------------------
+  if (isset($_GET["id"])) {
+    $id = intval($_GET["id"]);
+
+    // Get measurements
+    $stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(time) FROM measurement WHERE batch_id = :id");
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+    while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+      $temp = $row[0];
+      $time = $row[1];
+      $time *= 1000; // convert from Unix timestamp to JavaScript time
+      $data[] = "[$time, $temp]";
+    }
+
+    // Get batch data
+    $stmt = $conn->prepare("SELECT id, type, UNIX_TIMESTAMP(date) FROM batch WHERE id = :id");
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
+    $number = $row[0];
+    $type = $row[1];
+    $startTime = $row[2];
+    $startTimeFormatted = date("d-m-Y", $startTime);
+
+    // Get set points for set curve
+    $stmt = $conn->prepare("SELECT temp, hours FROM point WHERE batch_id = :id");
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+    while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+      $setTemp = $row[0];
+      $setTime = $startTime + $row[1]*3600;
+      $setTime *= 1000; // convert from Unix timestamp to JavaScript time
+      $setCurve[] = "[$setTime, $setTemp]";
+    }
+
+  }
+?>
+
 <!DOCTYPE HTML>
 <!--
 	Twenty by HTML5 UP
@@ -19,6 +67,7 @@
 	<script src="assets/js/jquery.dropotron.min.js"></script>
 	<script src="assets/js/jquery.scrolly.min.js"></script>
 	<script src="assets/js/jquery.scrollgress.min.js"></script>
+  <script src="assets/js/jquery.tablesorter.js"></script>
 	<script src="assets/js/skel.min.js"></script>
 	<script src="assets/js/util.js"></script>
 	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
@@ -27,6 +76,7 @@
 	<!-- My scripts-->
 	<script src="assets/js/highcharts.js"></script>
 	<script src="assets/js/highcharts.modules.exporting.js"></script>
+  <script src="assets/js/previous-batches.js"></script>
 
 </head>
 <body class="no-sidebar">
@@ -67,7 +117,7 @@
 
 			<header class="special container">
 				<span class="icon fa-beer"></span>
-				<h2><strong>Homebrew</strong></h2>
+				<h2>Previous batches</h2>
 			</header>
 
 			<!-- One -->
@@ -75,109 +125,102 @@
 
 				<!-- Content -->
 				<div class="content">
-					<section>
 
-						<!--<a href="#" class="image featured"><img src="images/pic04.jpg" alt="" /></a>-->
-						<div id="highcharts featured" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+          <section>
+            <?php
 
-						<!--Connect to database and get data temperature data-->
-						<?php
-							$servername = "localhost";
-							$username = "root";
-							$password = "";
-							$database = "homebrew";
+              if (isset($_GET["id"])) {
+                echo "<div id=\"highcharts featured\" style=\"min-width: 310px; height: 400px; margin: 0 auto\"></div>";
+              }
 
+            ?>
 
-							$conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
-							$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            <script type="text/javascript">
+              $(function () {
+                Highcharts.setOptions({
+                  global: {
+                    timezoneOffset: -1 * 60
+                  }
+                });
+                Highcharts.chart('highcharts featured', {
+                  chart: {
+                    type: 'spline'
+                  },
+                  title: {
+                    text: '<?php echo $type ?>'
+                  },
+                  subtitle: {
+                    text: 'Batch #<?php echo "$number: $startTimeFormatted"?>'
+                  },
+                  xAxis: {
+                    type: 'datetime',
+                    labels: {
+                      overflow: 'justify'
+                    }
+                  },
+                  yAxis: {
+                    title: {
+                      text: 'Temperatur (°C)'
+                    }
+                  },
+                  tooltip: {
+                    valueSuffix: ' °C'
+                  },
+                  plotOptions: {
+                    line: {
+                      dataLabels: {
+                        enabled: false
+                      },
+                      enableMouseTracking: true
+                    }
+                  },
+                  series: [{
+                    name: 'Temperatur',
+                    data: [<?php if (isset($data)) {echo join($data, ',');} ?>]
+                  }, {
+                    type: 'line',
+                    name: 'Set curve',
+                    data: [<?php if (isset($setCurve)) {echo join($setCurve, ',');} ?>]
+                  }],
+                  credits: {
+                    enabled: false
+                  },
+                  exporting: {
+                    enabled: false
+                  }
+                });
+              });
+            </script>
 
-							// Get measurements
-							$stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(time) FROM measurement WHERE batch_id = (SELECT MAX(id) FROM batch)");
-							$stmt->execute();
-							while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-								$temp = $row[0];
-								$time = $row[1];
-								$time *= 1000; // convert from Unix timestamp to JavaScript time
-								$data[] = "[$time, $temp]";
-							}
+          </section>
 
-							// Get batch data
-							$stmt = $conn->prepare("SELECT id, type, UNIX_TIMESTAMP(date) FROM batch WHERE id = (SELECT MAX(id) FROM batch)");
-							$stmt->execute();
-							$row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
-							$number = $row[0];
-							$type = $row[1];
-							$startTime = $row[2];
-							$startTimeFormatted = date("d-m-Y", $startTime);
+          <section>
+            <header>
+              <h3>Choose which batch too see</h3>
+            </header>
+            <table class="default batches" id="batchesTable">
+              <thead>
+                <th>Batch <i class="fa fa-sort" aria-hidden="true" style="color:#fff"></i></th>
+                <th>Type <i class="fa fa-sort" aria-hidden="true" style="color:#fff"></i></th>
+                <th>Date <i class="fa fa-sort" aria-hidden="true" style="color:#fff"></i></th>
+              </thead>
+              <tbody>
+                <?php
 
-							// Get set points for set curve
-							$stmt = $conn->prepare("SELECT temp, hours FROM point WHERE batch_id = (SELECT MAX(id) FROM batch)");
-							$stmt->execute();
-							while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-								$setTemp = $row[0];
-								$setTime = $startTime + $row[1]*3600;
-								$setTime *= 1000; // convert from Unix timestamp to JavaScript time
-								$setCurve[] = "[$setTime, $setTemp]";
-							}
+                  // Get data for batches
+                  $stmt = $conn->prepare("SELECT id, type, UNIX_TIMESTAMP(date) FROM batch");
+                  $stmt->execute();
+                  while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+                    echo "<tr>";
+                    echo   "<td>" . intval($row[0]) . "</td>";
+                    echo   "<td>" . $row[1] . "</td>";
+                    echo   "<td>" . date("d-m-Y", $row[2]) . "</td>";
+                    echo "</tr>";
+                  }
 
-						?>
-
-						<script type="text/javascript">
-						$(function () {
-							Highcharts.setOptions({
-								global: {
-									timezoneOffset: -1 * 60
-								}
-							});
-							Highcharts.chart('highcharts featured', {
-								chart: {
-									type: 'spline'
-								},
-								title: {
-									text: '<?php echo $type ?>'
-								},
-								subtitle: {
-									text: 'Batch #<?php echo "$number: $startTimeFormatted"?>'
-								},
-								xAxis: {
-									type: 'datetime',
-									labels: {
-										overflow: 'justify'
-									}
-								},
-								yAxis: {
-									title: {
-										text: 'Temperatur (°C)'
-									}
-								},
-								tooltip: {
-									valueSuffix: ' °C'
-								},
-								plotOptions: {
-									line: {
-										dataLabels: {
-											enabled: false
-										},
-										enableMouseTracking: true
-									}
-								},
-								series: [{
-									name: 'Temperatur',
-									data: [<?php if (isset($data)) {echo join($data, ',');} ?>]
-								}, {
-									type: 'line',
-									name: 'Set curve',
-									data: [<?php if (isset($setCurve)) {echo join($setCurve, ',');} ?>]
-								}],
-								credits: {
-							    enabled: false
-							  },
-								exporting: {
-									enabled: false
-								}
-							});
-						});
-						</script>
+                ?>
+              </tbody>
+            </table>
 					</section>
 
 					<section>
