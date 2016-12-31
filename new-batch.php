@@ -78,7 +78,7 @@
       }
 
       // Go to index.php
-      header("Location: /Homebrew");
+      header("Location: /");
       exit;
 
     }
@@ -333,6 +333,9 @@
             }
         ],
 				credits: {
+					enabled: false
+				},
+				exporting: {
 					enabled: false
 				}
       });

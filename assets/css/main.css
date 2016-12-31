@@ -2849,9 +2849,9 @@
 				display: block;
 				height: 60px;
 				left: 0;
-				position: fixed;
+				position: absolute;
 				top: 0;
-				width: 100%;
+				width: 75px;
 				z-index: 10001;
 			}
 
