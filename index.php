@@ -99,15 +99,15 @@
 			<h1 id="logo"><a href="/">Homebrew <span>by HENRIK</span></a></h1>
 			<nav id="nav">
 				<ul>
-					<li class="current"><a href="new-batch">New Batch</a></li>
-					<li class="current"><a href="previous-batches">Previous batches</a></li>
+					<li class="current"><a href="new-batch.php">New Batch</a></li>
+					<li class="current"><a href="previous-batches.php">Previous batches</a></li>
 					<li class="submenu">
 						<a href="#">More stuff</a>
 						<ul>
-							<li><a href="old_index">Welcome</a></li>
-							<li><a href="left-sidebar">Left Sidebar</a></li>
-							<li><a href="right-sidebar">Right Sidebar</a></li>
-							<li><a href="contact">Contact</a></li>
+							<li><a href="old_index.html">Welcome</a></li>
+							<li><a href="left-sidebar.html">Left Sidebar</a></li>
+							<li><a href="right-sidebar.html">Right Sidebar</a></li>
+							<li><a href="contact.html">Contact</a></li>
 							<li class="submenu">
 								<a href="#">Submenu</a>
 								<ul>
