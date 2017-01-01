@@ -15,6 +15,7 @@
     $stmt = $conn->prepare("SELECT temp, UNIX_TIMESTAMP(time) FROM measurement WHERE batch_id = :id");
     $stmt->bindParam(':id', $id);
     $stmt->execute();
+    $data = array();
     while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
       $temp = $row[0];
       $time = $row[1];
@@ -36,6 +37,7 @@
     $stmt = $conn->prepare("SELECT temp, hours FROM point WHERE batch_id = :id");
     $stmt->bindParam(':id', $id);
     $stmt->execute();
+    $setCurve = array();
     while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
       $setTemp = $row[0];
       $setTime = $startTime + $row[1]*3600;
@@ -76,7 +78,24 @@
 	<!-- My scripts-->
 	<script src="assets/js/highcharts.js"></script>
 	<script src="assets/js/highcharts.modules.exporting.js"></script>
+  <script type="text/javascript">var chart = 0;</script>
   <script src="assets/js/previous-batches.js"></script>
+  <?php
+    if (isset($_GET["id"])) {
+  		echo "<script type=\"text/javascript\">
+  			$(function () {
+  				chart.setTitle({
+  					text: '$type'
+  				});
+  				chart.setSubtitle({
+  					text: 'Batch #$number: $startTimeFormatted'
+  				});
+  				chart.series[0].setData([" . join($data, ',') . "]);
+  				chart.series[1].setData([" . join($setCurve, ',') . "]);
+  			});
+  		</script>";
+    }
+	?>
 
 </head>
 <body class="no-sidebar">
@@ -128,70 +147,10 @@
 
           <section>
             <?php
-
               if (isset($_GET["id"])) {
                 echo "<div id=\"highcharts featured\" style=\"min-width: 310px; height: 400px; margin: 0 auto\"></div>";
               }
-
             ?>
-
-            <script type="text/javascript">
-              $(function () {
-                Highcharts.setOptions({
-                  global: {
-                    timezoneOffset: -1 * 60
-                  }
-                });
-                Highcharts.chart('highcharts featured', {
-                  chart: {
-                    type: 'spline'
-                  },
-                  title: {
-                    text: '<?php echo $type ?>'
-                  },
-                  subtitle: {
-                    text: 'Batch #<?php echo "$number: $startTimeFormatted"?>'
-                  },
-                  xAxis: {
-                    type: 'datetime',
-                    labels: {
-                      overflow: 'justify'
-                    }
-                  },
-                  yAxis: {
-                    title: {
-                      text: 'Temperatur (°C)'
-                    }
-                  },
-                  tooltip: {
-                    valueSuffix: ' °C'
-                  },
-                  plotOptions: {
-                    line: {
-                      dataLabels: {
-                        enabled: false
-                      },
-                      enableMouseTracking: true
-                    }
-                  },
-                  series: [{
-                    name: 'Temperatur',
-                    data: [<?php if (isset($data)) {echo join($data, ',');} ?>]
-                  }, {
-                    type: 'line',
-                    name: 'Set curve',
-                    data: [<?php if (isset($setCurve)) {echo join($setCurve, ',');} ?>]
-                  }],
-                  credits: {
-                    enabled: false
-                  },
-                  exporting: {
-                    enabled: false
-                  }
-                });
-              });
-            </script>
-
           </section>
 
           <section>
@@ -206,7 +165,6 @@
               </thead>
               <tbody>
                 <?php
-
                   // Get data for batches
                   $stmt = $conn->prepare("SELECT id, type, UNIX_TIMESTAMP(date) FROM batch");
                   $stmt->execute();
@@ -217,7 +175,6 @@
                     echo   "<td>" . date("d-m-Y", $row[2]) . "</td>";
                     echo "</tr>";
                   }
-
                 ?>
               </tbody>
             </table>

@@ -1,3 +1,60 @@
+
+<!-- Database connection -->
+<?php
+	$servername = "localhost";
+	$username = "root";
+	$password = "";
+	$database = "homebrew";
+
+	$conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+	$stmt = $conn->prepare("SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'homebrew' AND TABLE_NAME = 'batch'");
+	$stmt->execute();
+	$row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
+
+	$num = $row[0];
+	$dateNow = date("d-m-Y");
+
+	// -------------------- Handle submit --------------------
+	if (isset($_GET["type"])) {
+		$type = $_GET["type"];
+
+		$timeNow = time();
+		$i = 1;
+		while (isset($_GET["point" . $i])) {
+
+			// Get X and Y value from the point
+			$point = explode(',', $_GET["point" . $i++]);
+
+			$hours[] = intval($point[0]);
+
+			$temp[] = $point[1];
+		}
+
+		// Create new batch
+		$stmt = $conn->prepare("INSERT INTO `batch`(`id`, `type`, `date`, `is_running`) VALUES (NULL, :type, FROM_UNIXTIME(:timeNow), 1)");
+		$stmt->bindParam(':type', $type);
+		$stmt->bindParam(':timeNow', $timeNow);
+		$stmt->execute();
+
+		// Add points to batch
+		$stmt = $conn->prepare("INSERT INTO `point`(`hours`, `temp`, `batch_id`) VALUES (:hours, :temp, :batchid)");
+		$stmt->bindParam(':batchid', $num);
+		for ($j = 1; $j < $i; $j++) {
+			$stmt->bindParam(':hours', $hours[$j-1]);
+			$stmt->bindParam(':temp', $temp[$j-1]);
+			$stmt->execute();
+		}
+
+		// Go to index.php
+		header("Location: /");
+		exit;
+
+	}
+
+?>
+
 <!DOCTYPE HTML>
 <!--
 	Twenty by HTML5 UP
@@ -24,65 +81,19 @@
   	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
   	<script src="assets/js/main.js"></script>
 
+		<!-- My scripts-->
   	<script src="assets/js/highcharts.js"></script>
   	<script src="assets/js/highcharts.modules.exporting.js"></script>
+		<script type="text/javascript">var chart = 0;</script>
+  	<script src="assets/js/new-batch.js"></script>
+		<script type="text/javascript">
+			$(function () {
+				chart.setSubtitle({
+					text: 'Batch #<?php echo "$num: $dateNow"; ?>'
+				});
+			});
+		</script>";
 
-
-  <!-- Database connection -->
-  <?php
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $database = "homebrew";
-
-    $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    $stmt = $conn->prepare("SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'homebrew' AND TABLE_NAME = 'batch'");
-    $stmt->execute();
-    $row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
-
-    $num = $row[0];
-    $dateNow = date("d-m-Y");
-
-    // -------------------- Handle submit --------------------
-    if (isset($_GET["type"])) {
-      $type = $_GET["type"];
-
-      $timeNow = time();
-      $i = 1;
-      while (isset($_GET["point" . $i])) {
-
-        // Get X and Y value from the point
-        $point = explode(',', $_GET["point" . $i++]);
-
-        $hours[] = intval($point[0]);
-
-        $temp[] = $point[1];
-      }
-
-      // Create new batch
-      $stmt = $conn->prepare("INSERT INTO `batch`(`id`, `type`, `date`, `is_running`) VALUES (NULL, :type, FROM_UNIXTIME(:timeNow), 1)");
-      $stmt->bindParam(':type', $type);
-      $stmt->bindParam(':timeNow', $timeNow);
-      $stmt->execute();
-
-      // Add points to batch
-      $stmt = $conn->prepare("INSERT INTO `point`(`hours`, `temp`, `batch_id`) VALUES (:hours, :temp, :batchid)");
-      $stmt->bindParam(':batchid', $num);
-      for ($j = 1; $j < $i; $j++) {
-        $stmt->bindParam(':hours', $hours[$j-1]);
-        $stmt->bindParam(':temp', $temp[$j-1]);
-        $stmt->execute();
-      }
-
-      // Go to index.php
-      header("Location: /");
-      exit;
-
-    }
-
-  ?>
 
 </head>
 <body class="no-sidebar">
@@ -258,123 +269,6 @@
 		</footer>
 
 	</div>
-
-  <!-- Scripts for datafields and chart -->
-  <script type="text/javascript">
-
-    $(document).ready(function() {
-    		var numFields = 4;
-        var maxFields = 12;
-        var wrapper = $(".insert_fields");
-        var addButton = $(".add_field");
-    		var removeButton = $(".remove_field");
-
-        $(addButton).click(function(e){ //on add input button click
-            e.preventDefault();
-            if(numFields < maxFields){ //max input box allowed
-    					numFields++; //text box increment
-              $(wrapper).append('<div class="3u 12u(mobile)"><input type="text" name="point' + numFields + '" id="point' + numFields + '" placeholder="<Hours>,<Temp>"/></div>'); //add input box
-            }
-        });
-
-    		$(removeButton).click(function(e){
-    			e.preventDefault();
-    			if (numFields > 2) {
-    				numFields--;
-    				wrapper.children().last().remove();
-    			}
-    		});
-
-    });
-
-    $(function () {
-      Highcharts.setOptions({
-        global: {
-          timezoneOffset: -1 * 60
-        }
-      });
-      var chart = Highcharts.chart('highcharts featured', {
-        chart: {
-          type: 'line'
-        },
-        title: {
-          text: 'Type'
-        },
-        subtitle: {
-          text: "<?php echo "Batch #$num: $dateNow"; ?>"
-        },
-        xAxis: {
-          type: 'datetime',
-          labels: {
-            overflow: 'justify'
-          }
-        },
-        yAxis: {
-          title: {
-            text: 'Temperatur (°C)'
-          }
-        },
-        tooltip: {
-          valueSuffix: ' °C'
-        },
-        plotOptions: {
-          line: {
-            dataLabels: {
-              enabled: false
-            },
-            enableMouseTracking: true
-          }
-        },
-        series: [{
-              name: 'Set curve',
-              data: []
-            }
-        ],
-				credits: {
-					enabled: false
-				},
-				exporting: {
-					enabled: false
-				}
-      });
-
-
-      $('form').on("blur", "input[id*='type']", function () {
-        chart.setTitle({
-          text: document.getElementById($(this).attr('id')).value
-        });
-      });
-
-      var currentDate =  parseInt(+ new Date() / 1000); // Reduce resolution from milliseconds to seconds
-
-      // This function is called everytime focus goes away from a insert field
-      $('form').on("blur", "input[id^='point']", function () {
-        var num = parseInt($(this).attr('id').substring(5));  // Point number
-        var point = document.getElementById($(this).attr('id')).value;
-        var splitted = point.split(",");
-        if (splitted.length == 2) {
-          var time = 1000*(+ currentDate + parseInt(splitted[0])*3600);
-          var temp = parseFloat(splitted[1]);
-
-          if (typeof chart.series[0].data[num-1] !== 'undefined') { // if point already exists
-            chart.series[0].data[num-1].update({
-              x: time,
-              y: temp
-            });
-          } else {
-            chart.series[0].addPoint([time, temp]);
-          }
-        }
-      });
-
-    });
-
-    function validateForm() {
-
-    }
-
-
-  </script>
 
 </body>
 </html>
