@@ -7,7 +7,7 @@ $(document).ready(function() {
 
   $('#batchesTable tbody').on("click", "tr", function () {
     var batchId = parseInt($(this).children().first().text());
-    window.location.href = "previous-batches?id=" + batchId;
+    window.location.href = "previous-batches.php?id=" + batchId;
   });
 
 });
