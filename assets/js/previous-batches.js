@@ -2,7 +2,8 @@
 $(document).ready(function() {
 
   $("#batchesTable").tablesorter({
-    dateFormat: "dd-mm-yyyy"
+    dateFormat: "dd-mm-yyyy",
+    sortList: [[0,1]] // Sort on first column, order descending.
   });
 
   $('#batchesTable tbody').on("click", "tr", function () {
@@ -15,7 +16,7 @@ $(document).ready(function() {
 $(function () {
   Highcharts.setOptions({
     global: {
-      timezoneOffset: -1 * 60
+      timezone: 'Europe/Oslo'
     }
   });
   chart = Highcharts.chart('highcharts featured', {
@@ -36,7 +37,7 @@ $(function () {
     },
     yAxis: {
       title: {
-        text: 'Temperatur (°C)'
+        text: 'Temperature (°C)'
       }
     },
     tooltip: {
@@ -51,11 +52,11 @@ $(function () {
       }
     },
     series: [{
-      name: 'Temperatur',
+      name: 'Temperature',
       data: []
     }, {
       type: 'line',
-      name: 'Set curve',
+      name: 'Setpoint',
       data: []
     }],
     credits: {

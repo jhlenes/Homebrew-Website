@@ -1,5 +1,6 @@
 $(document).ready(function() {
 
+  var offset = new Date().getTimezoneOffset();
   var timeNow = parseInt(+ new Date() / 1000);  // Reduce resolution from milliseconds to seconds
 
   var updater = function() {
@@ -14,7 +15,7 @@ $(document).ready(function() {
           while (index1 > 0) {
             var index2 = response.indexOf(';')
 
-            var x = parseInt(response.substring(0, index1));
+            var x = parseInt(response.substring(0, index1)) - offset * 60000;
             var y = parseFloat(response.substring(index1 + 1, index2));
             chart.series[0].addPoint([x, y]);
 
@@ -25,13 +26,13 @@ $(document).ready(function() {
         }
     });
   };
-  setInterval(updater, 10000);  // Call every 10 seconds
+  setInterval(updater, 30000);  // Call every 30 seconds
 });
 
 $(function () {
   Highcharts.setOptions({
     global: {
-      timezoneOffset: -1 * 60
+      timezone: 'Europe/Oslo'
     }
   });
   chart = Highcharts.chart('highcharts featured', {
@@ -52,7 +53,7 @@ $(function () {
     },
     yAxis: {
       title: {
-        text: 'Temperatur (°C)'
+        text: 'Temperature (°C)'
       }
     },
     tooltip: {
@@ -67,11 +68,11 @@ $(function () {
       }
     },
     series: [{
-      name: 'Temperatur',
+      name: 'Temperature',
       data: []
     }, {
       type: 'line',
-      name: 'Set curve',
+      name: 'Setpoint',
       data: []
     }],
     credits: {

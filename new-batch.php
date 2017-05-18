@@ -1,6 +1,8 @@
 
 <!-- Database connection -->
 <?php
+	date_default_timezone_set("Europe/Oslo");
+
 	$servername = "localhost";
 	$username = "root";
 	$password = "";
@@ -63,7 +65,7 @@
 -->
 <html>
 <head>
-	<title>Homebrew by Henrik</title>
+	<title>New Batch | Homebrew</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
@@ -78,6 +80,7 @@
   	<script src="assets/js/jquery.scrollgress.min.js"></script>
   	<script src="assets/js/skel.min.js"></script>
   	<script src="assets/js/util.js"></script>
+		<script src="assets/js/moment.js"></script>
   	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
   	<script src="assets/js/main.js"></script>
 
@@ -106,7 +109,7 @@
 				<ul>
 					<li class="current"><a href="new-batch.php">New Batch</a></li>
 					<li class="current"><a href="previous-batches.php">Previous batches</a></li>
-					<li class="submenu">
+					<!-- <li class="submenu">
 						<a href="#">More stuff</a>
 						<ul>
 							<li><a href="old_index.html">Welcome</a></li>
@@ -124,7 +127,7 @@
 								</ul>
 							</li>
 						</ul>
-					</li>
+					</li> -->
 				</ul>
 			</nav>
 		</header>
@@ -134,7 +137,7 @@
 
 			<header class="special container">
 				<span class="icon fa-beer"></span>
-				<h2>Start a new batch</h2>
+				<h2>New batch</h2>
 			</header>
 
 			<!-- One -->
@@ -150,15 +153,15 @@
 					</section>
 
 					<section>
-            <header>
-              <h3>Give me the details</h3>
-            </header>
 						<form onsubmit="return confirm('Er du sikker? Dette vil sette i gang prosessen med de oppgitte dataene.');">
               <div class="row 50%">
                 <div class="12u">
-                  <input type="text" name="type" id="type" placeholder="Type" />
+									<h4>Beer type</h4>
+                  <input type="text" name="type" id="type" placeholder="e.g. Amber ale" />
                 </div>
               </div>
+							<br>
+							<h4>Setpoints</h4>
 							<div class="insert_fields row 50%">
 								<div class="3u 12u(mobile)">
 									<input type="text" name="point1" id="point1" placeholder="<Hours>,<Temp>" />
@@ -178,7 +181,7 @@
 									<ul class="buttons">
 										<li><input type="button" class="add_field" value="Add point" /></li>
 										<li><input type="button" class="remove_field" value="Remove point" /></li>
-                    <li><input type="submit" class="special" value="Submit" /></li>
+                    <li><input type="submit" class="special" value="Start batch" /></li>
 									</ul>
 								</div>
 							</div>
@@ -188,17 +191,16 @@
 
 					<section>
 						<header>
-							<h3>Dolore Amet Consequa</h3>
+							<h3>Control your future</h3>
 						</header>
-						<p>Aliquam massa urna, imperdiet sit amet mi non, bibendum euismod est. Curabitur mi justo, tincidunt vel eros ullamcorper, porta cursus justo. Cras vel neque eros. Vestibulum diam quam, mollis at consectetur non, malesuada quis augue. Morbi tincidunt pretium interdum. Morbi mattis elementum orci, nec dictum massa. Morbi eu faucibus massa. Aliquam massa urna, imperdiet sit amet mi non, bibendum euismod est. Curabitur mi justo, tincidunt vel eros ullamcorper, porta cursus justo. Cras vel neque eros. Vestibulum diam.</p>
-						<p>Vestibulum diam quam, mollis at consectetur non, malesuada quis augue. Morbi tincidunt pretium interdum. Morbi mattis elementum orci, nec dictum porta cursus justo. Quisque ultricies lorem in ligula condimentum, et egestas turpis sagittis. Cras ac nunc urna. Nullam eget lobortis purus. Phasellus vitae tortor non est placerat tristique. Sed id sem et massa ornare pellentesque. Maecenas pharetra porta accumsan. </p>
-						<p>In vestibulum massa quis arcu lobortis tempus. Nam pretium arcu in odio vulputate luctus. Suspendisse euismod lorem eget lacinia fringilla. Sed sed felis justo. Nunc sodales elit in laoreet aliquam. Nam gravida, nisl sit amet iaculis porttitor, risus nisi rutrum metus, non hendrerit ipsum arcu tristique est.</p>
+						<p>What's a future without beer? Make sure your brewing process is perfect.</p>
 					</section>
 				</div>
 
 			</section>
 
 			<!-- Two -->
+			<!--
 			<section class="wrapper style1 container special">
 				<div class="row">
 					<div class="4u 12u(narrower)">
@@ -247,7 +249,7 @@
 
 					</div>
 				</div>
-			</section>
+			</section> -->
 
 		</article>
 
@@ -255,15 +257,15 @@
 		<footer id="footer">
 
 			<ul class="icons">
-				<li><a href="#" class="icon circle fa-twitter"><span class="label">Twitter</span></a></li>
+				<!-- <li><a href="#" class="icon circle fa-twitter"><span class="label">Twitter</span></a></li>
 				<li><a href="#" class="icon circle fa-facebook"><span class="label">Facebook</span></a></li>
 				<li><a href="#" class="icon circle fa-google-plus"><span class="label">Google+</span></a></li>
-				<li><a href="#" class="icon circle fa-github"><span class="label">Github</span></a></li>
-				<li><a href="#" class="icon circle fa-dribbble"><span class="label">Dribbble</span></a></li>
+				<li><a href="#" class="icon circle fa-dribbble"><span class="label">Dribbble</span></a></li> -->
+				<li><a href="https://github.com/jhlenes/Homebrew-Website" class="icon circle fa-github"><span class="label">Github</span></a></li>
 			</ul>
 
 			<ul class="copyright">
-				<li>&copy; Henrik Lenes</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+				<li>&copy; Jan Henrik Lenes</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
 			</ul>
 
 		</footer>

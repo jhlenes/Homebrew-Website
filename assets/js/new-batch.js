@@ -26,7 +26,7 @@ $(document).ready(function() {
 $(function () {
   Highcharts.setOptions({
     global: {
-      timezoneOffset: -1 * 60
+      timezone: 'Europe/Oslo'
     }
   });
   chart = Highcharts.chart('highcharts featured', {
@@ -34,7 +34,7 @@ $(function () {
       type: 'line'
     },
     title: {
-      text: 'Type'
+      text: 'Beer type'
     },
     subtitle: {
       text: ''
@@ -47,7 +47,7 @@ $(function () {
     },
     yAxis: {
       title: {
-        text: 'Temperatur (°C)'
+        text: 'Temperature (°C)'
       }
     },
     tooltip: {
@@ -62,7 +62,7 @@ $(function () {
       }
     },
     series: [{
-          name: 'Set curve',
+          name: 'Setpoint',
           data: []
         }
     ],
@@ -80,7 +80,8 @@ $(function () {
     });
   });
 
-  var currentDate =  parseInt(+ new Date() / 1000); // Reduce resolution from milliseconds to seconds
+  var offset = new Date().getTimezoneOffset();
+  var currentDate =  parseInt(+ new Date() / 1000) - offset * 60; // Reduce resolution from milliseconds to seconds
 
   // This function is called everytime focus goes away from a insert field
   $('form').on("blur", "input[id^='point']", function () {

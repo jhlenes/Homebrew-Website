@@ -1,6 +1,10 @@
 
 <!--Connect to database and get data temperature data-->
 <?php
+	date_default_timezone_set("Europe/Oslo");
+
+	$timeOffset = timezone_offset_get(timezone_open( "Europe/Oslo" ), new DateTime());
+
 	$servername = "localhost";
 	$username = "root";
 	$password = "";
@@ -15,7 +19,7 @@
 	$data = array();
 	while ($row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
 		$temp = $row[0];
-		$time = $row[1];
+		$time = $row[1] + $timeOffset;
 		$time *= 1000; // convert from Unix timestamp to JavaScript time
 		$data[] = "[$time, $temp]";
 	}
@@ -26,7 +30,7 @@
 	$row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
 	$number = $row[0];
 	$type = $row[1];
-	$startTime = $row[2];
+	$startTime = $row[2] + $timeOffset;	// Convert to correct timezone
 	$startTimeFormatted = date("d-m-Y", $startTime);
 
 	// Get set points for set curve
@@ -65,6 +69,7 @@
 	<script src="assets/js/jquery.scrollgress.min.js"></script>
 	<script src="assets/js/skel.min.js"></script>
 	<script src="assets/js/util.js"></script>
+	<script src="assets/js/moment.js"></script>
 	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
 	<script src="assets/js/main.js"></script>
 
@@ -96,12 +101,12 @@
 
 		<!-- Header -->
 		<header id="header">
-			<h1 id="logo"><a href="/">Homebrew <span>by HENRIK</span></a></h1>
+			<h1 id="logo"><a href="/">HOMEBREW <span>BY HENRIK</span></a></h1>
 			<nav id="nav">
 				<ul>
 					<li class="current"><a href="new-batch.php">New Batch</a></li>
 					<li class="current"><a href="previous-batches.php">Previous batches</a></li>
-					<li class="submenu">
+					<!-- <li class="submenu">
 						<a href="#">More stuff</a>
 						<ul>
 							<li><a href="old_index.html">Welcome</a></li>
@@ -119,7 +124,7 @@
 								</ul>
 							</li>
 						</ul>
-					</li>
+					</li> -->
 				</ul>
 			</nav>
 		</header>
@@ -146,18 +151,16 @@
 
 					<section>
 						<header>
-							<h3>Dolore Amet Consequa</h3>
+							<h3>Watch over your beer</h3>
 						</header>
-						<p>Aliquam massa urna, imperdiet sit amet mi non, bibendum euismod est. Curabitur mi justo, tincidunt vel eros ullamcorper, porta cursus justo. Cras vel neque eros. Vestibulum diam quam, mollis at consectetur non, malesuada quis augue. Morbi tincidunt pretium interdum. Morbi mattis elementum orci, nec dictum massa. Morbi eu faucibus massa. Aliquam massa urna, imperdiet sit amet mi non, bibendum euismod est. Curabitur mi justo, tincidunt vel eros ullamcorper, porta cursus justo. Cras vel neque eros. Vestibulum diam.</p>
-						<p>Vestibulum diam quam, mollis at consectetur non, malesuada quis augue. Morbi tincidunt pretium interdum. Morbi mattis elementum orci, nec dictum porta cursus justo. Quisque ultricies lorem in ligula condimentum, et egestas turpis sagittis. Cras ac nunc urna. Nullam eget lobortis purus. Phasellus vitae tortor non est placerat tristique. Sed id sem et massa ornare pellentesque. Maecenas pharetra porta accumsan. </p>
-						<p>In vestibulum massa quis arcu lobortis tempus. Nam pretium arcu in odio vulputate luctus. Suspendisse euismod lorem eget lacinia fringilla. Sed sed felis justo. Nunc sodales elit in laoreet aliquam. Nam gravida, nisl sit amet iaculis porttitor, risus nisi rutrum metus, non hendrerit ipsum arcu tristique est.</p>
+						<p>Monitor your brewing in realtime, because nothing is more exciting.</p>
 					</section>
 				</div>
 
 			</section>
 
 			<!-- Two -->
-			<section class="wrapper style1 container special">
+			<!-- <section class="wrapper style1 container special">
 				<div class="row">
 					<div class="4u 12u(narrower)">
 
@@ -205,7 +208,7 @@
 
 					</div>
 				</div>
-			</section>
+			</section> -->
 
 		</article>
 
@@ -213,15 +216,15 @@
 		<footer id="footer">
 
 			<ul class="icons">
-				<li><a href="#" class="icon circle fa-twitter"><span class="label">Twitter</span></a></li>
+				<!-- <li><a href="#" class="icon circle fa-twitter"><span class="label">Twitter</span></a></li>
 				<li><a href="#" class="icon circle fa-facebook"><span class="label">Facebook</span></a></li>
 				<li><a href="#" class="icon circle fa-google-plus"><span class="label">Google+</span></a></li>
-				<li><a href="#" class="icon circle fa-github"><span class="label">Github</span></a></li>
-				<li><a href="#" class="icon circle fa-dribbble"><span class="label">Dribbble</span></a></li>
+				<li><a href="#" class="icon circle fa-dribbble"><span class="label">Dribbble</span></a></li> -->
+				<li><a href="https://github.com/jhlenes/Homebrew-Website" class="icon circle fa-github"><span class="label">Github</span></a></li>
 			</ul>
 
 			<ul class="copyright">
-				<li>&copy; Henrik Lenes</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+				<li>&copy; Jan Henrik Lenes</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
 			</ul>
 
 		</footer>
