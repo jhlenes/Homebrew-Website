@@ -55,82 +55,23 @@
 
 	}
 
-?>
-
-<!DOCTYPE HTML>
-<!--
-	Twenty by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-<head>
-	<title>New Batch | Homebrew</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
-	<link rel="stylesheet" href="assets/css/main.css" />
-	<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
-	<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
-
-	<!-- Scripts -->
-  	<script src="assets/js/jquery.min.js"></script>
-  	<script src="assets/js/jquery.dropotron.min.js"></script>
-  	<script src="assets/js/jquery.scrolly.min.js"></script>
-  	<script src="assets/js/jquery.scrollgress.min.js"></script>
-  	<script src="assets/js/skel.min.js"></script>
-  	<script src="assets/js/util.js"></script>
-		<script src="assets/js/moment.js"></script>
-  	<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-  	<script src="assets/js/main.js"></script>
-
-		<!-- My scripts-->
-  	<script src="assets/js/highcharts.js"></script>
-  	<script src="assets/js/highcharts.modules.exporting.js"></script>
-		<script type="text/javascript">var chart = 0;</script>
-  	<script src="assets/js/new-batch.js"></script>
-		<script type="text/javascript">
-			$(function () {
-				chart.setSubtitle({
-					text: 'Batch #<?php echo "$num: $dateNow"; ?>'
-				});
+	// Include HTML for top of site
+	$title = "New Batch | Homebrew";
+	$additionalScripts = "
+	<script src=\"assets/js/highcharts.js\"></script>
+	<script src=\"assets/js/highcharts.modules.exporting.js\"></script>
+	<script type=\"text/javascript\">var chart = 0;</script>
+	<script src=\"assets/js/new-batch.js\"></script>
+	<script type=\"text/javascript\">
+		$(function () {
+			chart.setSubtitle({
+				text: 'Batch #$num: $dateNow'
 			});
-		</script>";
+		});
+	</script>";
 
-
-</head>
-<body class="no-sidebar">
-	<div id="page-wrapper">
-
-		<!-- Header -->
-		<header id="header">
-			<h1 id="logo"><a href="/">Homebrew <span>by HENRIK</span></a></h1>
-			<nav id="nav">
-				<ul>
-					<li class="current"><a href="new-batch.php">New Batch</a></li>
-					<li class="current"><a href="previous-batches.php">Previous batches</a></li>
-					<!-- <li class="submenu">
-						<a href="#">More stuff</a>
-						<ul>
-							<li><a href="old_index.html">Welcome</a></li>
-							<li><a href="left-sidebar.html">Left Sidebar</a></li>
-							<li><a href="right-sidebar.html">Right Sidebar</a></li>
-							<li><a href="contact.html">Contact</a></li>
-							<li class="submenu">
-								<a href="#">Submenu</a>
-								<ul>
-									<li><a href="#">Dolore Sed</a></li>
-									<li><a href="#">Consequat</a></li>
-									<li><a href="#">Lorem Magna</a></li>
-									<li><a href="#">Sed Magna</a></li>
-									<li><a href="#">Ipsum Nisl</a></li>
-								</ul>
-							</li>
-						</ul>
-					</li> -->
-				</ul>
-			</nav>
-		</header>
+	include("top.php");
+?>
 
 		<!-- Main -->
 		<article id="main">
@@ -153,7 +94,7 @@
 					</section>
 
 					<section>
-						<form onsubmit="return confirm('Er du sikker? Dette vil sette i gang prosessen med de oppgitte dataene.');">
+						<form onsubmit="return confirm('Are you sure you want to start this batch?');">
               <div class="row 50%">
                 <div class="12u">
 									<h4>Beer type</h4>
@@ -181,7 +122,7 @@
 									<ul class="buttons">
 										<li><input type="button" class="add_field" value="Add point" /></li>
 										<li><input type="button" class="remove_field" value="Remove point" /></li>
-                    <li><input type="submit" class="special" value="Start batch" /></li>
+                    <li><input type="submit" class="special" value="Start brewing" /></li>
 									</ul>
 								</div>
 							</div>
@@ -199,78 +140,6 @@
 
 			</section>
 
-			<!-- Two -->
-			<!--
-			<section class="wrapper style1 container special">
-				<div class="row">
-					<div class="4u 12u(narrower)">
-
-						<section>
-							<header>
-								<h3>This is Something</h3>
-							</header>
-							<p>Sed tristique purus vitae volutpat ultrices. Aliquam eu elit eget arcu commodo suscipit dolor nec nibh. Proin a ullamcorper elit, et sagittis turpis. Integer ut fermentum.</p>
-							<footer>
-								<ul class="buttons">
-									<li><a href="#" class="button small">Learn More</a></li>
-								</ul>
-							</footer>
-						</section>
-
-					</div>
-					<div class="4u 12u(narrower)">
-
-						<section>
-							<header>
-								<h3>Also Something</h3>
-							</header>
-							<p>Sed tristique purus vitae volutpat ultrices. Aliquam eu elit eget arcu commodo suscipit dolor nec nibh. Proin a ullamcorper elit, et sagittis turpis. Integer ut fermentum.</p>
-							<footer>
-								<ul class="buttons">
-									<li><a href="#" class="button small">Learn More</a></li>
-								</ul>
-							</footer>
-						</section>
-
-					</div>
-					<div class="4u 12u(narrower)">
-
-						<section>
-						<header>
-							<h3>Probably Something</h3>
-						</header>
-						<p>Sed tristique purus vitae volutpat ultrices. Aliquam eu elit eget arcu commodo suscipit dolor nec nibh. Proin a ullamcorper elit, et sagittis turpis. Integer ut fermentum.</p>
-						<footer>
-							<ul class="buttons">
-								<li><a href="#" class="button small">Learn More</a></li>
-							</ul>
-						</footer>
-						</section>
-
-					</div>
-				</div>
-			</section> -->
-
 		</article>
 
-		<!-- Footer -->
-		<footer id="footer">
-
-			<ul class="icons">
-				<!-- <li><a href="#" class="icon circle fa-twitter"><span class="label">Twitter</span></a></li>
-				<li><a href="#" class="icon circle fa-facebook"><span class="label">Facebook</span></a></li>
-				<li><a href="#" class="icon circle fa-google-plus"><span class="label">Google+</span></a></li>
-				<li><a href="#" class="icon circle fa-dribbble"><span class="label">Dribbble</span></a></li> -->
-				<li><a href="https://github.com/jhlenes/Homebrew-Website" class="icon circle fa-github"><span class="label">Github</span></a></li>
-			</ul>
-
-			<ul class="copyright">
-				<li>&copy; Jan Henrik Lenes</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-			</ul>
-
-		</footer>
-
-	</div>
-
-</body>
-</html>
+<?php include("bottom.php"); ?>
