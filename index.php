@@ -23,12 +23,13 @@
 	}
 
 	// Get batch data
-	$stmt = $conn->prepare("SELECT id, type, UNIX_TIMESTAMP(date) FROM batch WHERE id = (SELECT MAX(id) FROM batch)");
+	$stmt = $conn->prepare("SELECT id, type, UNIX_TIMESTAMP(date), is_running FROM batch WHERE id = (SELECT MAX(id) FROM batch)");
 	$stmt->execute();
 	$row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
 	$number = $row[0];
 	$type = $row[1];
 	$startTime = $row[2] + $timeOffset;	// Convert to correct timezone
+	$running = $row[3];
 	$startTimeFormatted = date("d-m-Y", $startTime);
 
 	// Get set points for set curve
@@ -41,6 +42,13 @@
 		$setTime *= 1000; // convert from Unix timestamp to JavaScript time
 		$setCurve[] = "[$setTime, $setTemp]";
 	}
+
+	// Get current temp and heating status
+	$stmt = $conn->prepare("SELECT current_temp, is_heating FROM status WHERE id = 1");
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT);
+    $current_temp = $row[0];
+    $heating = $row[1];
 
 	// Include HTML for top of site
 	$title = "Homebrew";
@@ -64,6 +72,7 @@
 		});
 	</script>";
 
+
 	include("top.php");
 ?>
 
@@ -81,7 +90,21 @@
 				<!-- Content -->
 				<div class="content">
 					<section>
-
+						<h2 id="brewstatustitle" <?php if ($running) echo "style=\"display:none\"";?>>LAST BATCH</h2>
+						<div id="brewstatusbar" class="row 50%" <?php if (!$running) echo "style=\"display:none\"";?>>
+							<div class="9u 12u(mobile)">
+								<h2>
+									<span class="icon fa-thermometer-half"></span>
+									<span  id="current_temp" ><?php echo "$current_temp"; ?></span>&deg;C
+									&nbsp;&nbsp;&nbsp;&nbsp;<span class="icon fa-fire"></span>
+									<span  id="is_heating" <?php if ($heating) echo "style=\"color:green\" class=\"icon fa-check\""; else echo "style=\"color:red\" class=\"icon fa-times\""; ?>></span>
+								</h2>
+							</div>
+							<div class="3u 12u(mobile)">
+								<a href="/send?status=0" onclick="return confirm('Are you sure you want to abort this batch?')"><input type="submit" class="special abortbutton" value="Abort batch"/></a>
+							</div>
+						</div>
+						
 						<!--<a href="#" class="image featured"><img src="images/pic04.jpg" alt="" /></a>-->
 						<div id="highcharts featured" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 

@@ -11,6 +11,7 @@ $(document).ready(function() {
         success: function(response){
           timeNow = parseInt(+ new Date() / 1000);  // Update time
 
+          // Update chart with new values
           var index1 = response.indexOf(',');
           while (index1 > 0) {
             var index2 = response.indexOf(';')
@@ -23,10 +24,26 @@ $(document).ready(function() {
             index1 = response.indexOf(',');
           }
 
+          // Update brewing status bar
+          response = response.substring(1);
+          index1 = response.indexOf(':');
+          if (index1 < 0) {
+            $('#brewstatusbar').css('display', 'none');
+            $('#brewstatustitle').css('display', 'block');
+          } else {
+            $('#brewstatusbar').css('display', 'block');
+            $('#brewstatustitle').css('display', 'none');
+            $('#current_temp').text(parseFloat(response.substring(0, index1)));
+            if (parseInt(response.substring(index1 + 1)) == 1) {
+              $('#is_heating').attr('class', 'icon fa-check').css('color', 'green');  
+            } else {
+              $('#is_heating').attr('class', 'icon fa-times').css('color', 'red');
+            }
+          }
         }
     });
   };
-  setInterval(updater, 30000);  // Call every 30 seconds
+  setInterval(updater, 10000);  // Call every 10 seconds
 });
 
 $(function () {

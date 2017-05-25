@@ -5,7 +5,28 @@
   $password = "";
   $database = "homebrew";
 
-  if (isset($_GET["temp"])) {
+  if (isset($_GET["temp"]) && isset($_GET["heating"])) {
+    try {
+      $temp = $_GET["temp"];
+      $heating = $_GET["heating"];
+
+      $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+      $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+      $stmt = $conn->prepare("INSERT INTO measurement (temp, time, batch_id) VALUES (:temp, CURRENT_TIMESTAMP, (SELECT MAX(id) FROM batch))");
+      $stmt->bindParam(':temp', $temp);
+      $stmt->execute();
+
+      $stmt = $conn->prepare("UPDATE status SET current_temp = :temp, is_heating = :heating WHERE id = 1");
+      $stmt->bindParam(':temp', $temp);
+      $stmt->bindParam(':heating', $heating);
+      $stmt->execute();
+
+      echo "OK";
+    } catch (PDOException $e) {
+      echo "Connection failed: " . $e->getMessage();
+    }
+  } else if (isset($_GET["temp"])) {
     try {
       $temp = $_GET["temp"];
 

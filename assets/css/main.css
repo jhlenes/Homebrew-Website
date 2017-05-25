@@ -3219,3 +3219,15 @@
 			}
 
 	}
+
+	input[type="submit"].special.abortbutton {
+		color: #cb2431 !important;
+		background: #f1f1f1 !important;
+		border: 1px solid #e1e1e1 !important;
+	}
+
+	input[type="submit"].special.abortbutton:hover {
+		color: #fff !important;
+		background: #cb2431 !important;
+		border-color: #9e1c23 !important;
+	}

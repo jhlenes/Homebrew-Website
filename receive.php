@@ -46,6 +46,16 @@
     echo ":";
 
   } else {  // Batch is finished or aborted
+
+    // Set running status of batch to 0
+    $stmt = $conn->prepare("SELECT MAX(id) FROM batch");
+    $stmt->execute();
+    $id = $stmt->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)[0];
+
+    $stmt = $conn->prepare("UPDATE `batch` SET `is_running` = :status WHERE `id` = :id");
+    $stmt->bindParam(':status', $running);
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
     echo ";;-1;";
     echo ":";
   }
